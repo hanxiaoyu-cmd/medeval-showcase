@@ -7,7 +7,7 @@
 
 <br/>
 
-![version](https://img.shields.io/badge/VERSION-v1.32-6c8cff?style=for-the-badge&labelColor=0b0f1a)
+![version](https://img.shields.io/badge/VERSION-v1.33-6c8cff?style=for-the-badge&labelColor=0b0f1a)
 ![status](https://img.shields.io/badge/STATUS-OPERATIONAL-00e5a0?style=for-the-badge&labelColor=0b0f1a)
 ![engine](https://img.shields.io/badge/ENGINE-AGENT__NATIVE-b06cff?style=for-the-badge&labelColor=0b0f1a)
 ![grounding](https://img.shields.io/badge/CITATIONS-CHUNK__LEVEL-00e5a0?style=for-the-badge&labelColor=0b0f1a)
@@ -28,6 +28,41 @@
 **⚠ 本仓库为项目展示页,不含源码。**
 
 ![对话工作台](assets/aurora-home.png)
+
+</div>
+
+---
+
+## ✦ v1.33 更新 ── AGENT-NATIVE 评估引擎 `联网循证`
+
+> 评估侧完成与生成侧的同构:大模型主导**调查 → 取证 → 评审**。
+> 事实主干不再是上传材料的自说自话,而是**联网检索的确凿证据——竞品、官方标准、临床文献**。
+
+```mermaid
+flowchart LR
+    subgraph EVAL [AGENT-NATIVE 评估引擎 v1.33]
+        direction LR
+        INV[🔎 证据调查代理<br/>查→读→看缺口→补查] --> FRAME[📐 标准框架<br/>官方标准+平台要求=及格线]
+        FRAME --> COMP[🗂 竞品调查代理<br/>每竞品一份带引用档案]
+        COMP --> DIM[⚖️ 维度评审子代理<br/>取证式评分·引用按构造接地]
+        DIM --> GATE[🛡 确定性门禁<br/>接地强制·终报门·未挣得满分被扣留]
+    end
+```
+
+| 代理 | 做什么 | 严格性保证 |
+|:--:|---|---|
+| 🔎 **证据调查** | 按维度×证据线(竞品/标准/文献)迭代联网检索,覆盖矩阵闭合才收工 | 查不到的**显式登记缺口**,禁止静默 |
+| ⚖️ **维度评审** | 每维度一个代理:先读标准框架,再自主检索证据包,读过全文才允许判断 | **引用按构造接地**——只能引用自己检索到的证据,伪造在结构上不存在 |
+| 🗂 **竞品调查** | 每个裁决后的竞品深挖一份档案:K号/法规状态/技术特征/实质差异,全带引用 | 零可解析引用的档案**自动降为背景资料** |
+| 🛡 **门禁不变** | 接地强制、竞品裁决、终报门一行未删,agent 产出过同样的门 | 一切降级显式标记,`scored_by` 可见 |
+
+**真实 A/B(同器械同材料)**:检索证据 `193 vs 48` · 官方标准 `8 项(含 21 CFR 870.1330 精确条款) vs 0` · 竞品 `6 个带真实 K 号 + 3/3 接地档案 vs 验证 0 证据` · 评分 `18/18 条可解析引用,4 维度代理零兜底`。
+
+同版亮相:**⬡ 3D 玻璃金字塔工作台** —— 每次评估/生成随真实进度逐层建成的玻璃金字塔(Three.js,透明玻璃质感+边角线辉光),内嵌 LLM 对话编排:拖入材料、聊天发起、档案确认卡、竞品档案面板、实时进度,全程不离开金字塔。
+
+<div align="center">
+
+`v1.33 = 联网确凿证据主干 · 取证式评审 · 引用按构造接地 · 玻璃金字塔工作台`
 
 </div>
 
@@ -168,7 +203,8 @@ flowchart LR
 
 - 定位:**专家辅助草稿引擎** —— 产出需由法规事务(RA)专业人员复核,不构成申报建议
 - 生成引擎:六模板全接入(CEP · CER · CIP · IB · PMCF Plan · PMCF Synopsis),`agent_native` 为默认智能引擎
-- 界面:对话工作台(v2,主入口)+ 经典专业界面双模式
+- 评估引擎:agent-native 联网循证(`EVAL_ENGINE=agent_native` 默认),证据调查/维度评审/竞品调查三类代理 + 确定性门禁
+- 界面:3D 玻璃金字塔工作台(默认落地,内嵌对话编排)+ 经典专业界面双模式
 - 核心代码为私有仓库;本仓库仅作项目展示,合作或试用请通过 Issue 联系
 
 ## ✦ 技术栈
@@ -178,7 +214,7 @@ flowchart LR
 <div align="center">
 <br/>
 
-**⬡ MEDEVAL v1.32 ⬡**
+**⬡ MEDEVAL v1.33 ⬡**
 
 `⟢ built for regulatory-grade evidence, not vibes ⟣`
 
