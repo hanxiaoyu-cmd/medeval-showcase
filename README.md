@@ -7,7 +7,7 @@
 
 <br/>
 
-![version](https://img.shields.io/badge/VERSION-v1.33-6c8cff?style=for-the-badge&labelColor=0b0f1a)
+![version](https://img.shields.io/badge/VERSION-v1.35r-6c8cff?style=for-the-badge&labelColor=0b0f1a)
 ![status](https://img.shields.io/badge/STATUS-OPERATIONAL-00e5a0?style=for-the-badge&labelColor=0b0f1a)
 ![engine](https://img.shields.io/badge/ENGINE-AGENT__NATIVE-b06cff?style=for-the-badge&labelColor=0b0f1a)
 ![grounding](https://img.shields.io/badge/CITATIONS-CHUNK__LEVEL-00e5a0?style=for-the-badge&labelColor=0b0f1a)
@@ -17,17 +17,78 @@
 
 ```
    ╔══════════════════════════════════════════════════════════════════════╗
-   ║   CURATE ▸ PLAN ▸ FREEZE ▸ RETRIEVE ▸ WRITE ▸ REVIEW ▸ CRITIQUE ▸ GATE ║
-   ║   语料预筛  自主大纲  事实冻结  工具检索  多智能体  审查  跨章一致  门禁 ║
+   ║   CURATE ▸ PLAN ▸ FREEZE ▸ RETRIEVE ▸ WRITE ▸ REVIEW ▸ GATE ▸ COMPLETE ║
+   ║   语料预筛  自主大纲  事实冻结  工具检索  多智能体  审查  门禁  信息补全 ║
    ╚══════════════════════════════════════════════════════════════════════╝
 ```
 
-> **一句话操控整条申报流水线** — 上传材料 ▸ 智能清洗 ▸ 循证评估 ▸ 竞品对比 ▸ 结果追问 ▸ **自主生成 CEP / CER / CIP / IB / PMCF 草稿**。
+> **一句话操控整条申报流水线** — 上传材料 ▸ 智能清洗 ▸ 循证评估 ▸ 竞品对比 ▸ 结果追问 ▸ **自主生成 CEP / CER / CIP / IB / PMCF 草稿** ▸ **缺口两层补全**。
 > 全流程大模型驱动 · 引用锚定源文件 · 降级透明 · 重操作确认 · 本地优先。
 
 **⚠ 本仓库为项目展示页,不含源码。**
 
 ![对话工作台](assets/aurora-home.png)
+
+</div>
+
+---
+
+## ✦ v1.35r 更新 ── 生成后信息补全代理 `两层取证 · 医疗数据库联网`
+
+> 生成出的草稿里每一个 `[MISSING: …]` 缺口,交给一个**可选**的补全代理去填:
+> 先在**已上传语料里再检索**(逐字引文接地才采纳),仍缺的**外部背景类**缺口再走
+> **联网医疗数据库**收集。原稿永不被改,另存补全版文档 + 分类补料清单。
+
+```mermaid
+flowchart LR
+    DRAFT[📄 生成草稿<br/>含 MISSING 缺口]:::src --> EX[🔖 缺口提取 + 分类]:::ag
+    subgraph COMP [信息补全代理 v1.35r]
+        direction LR
+        T1[① 语料补全<br/>全语料再检索<br/>逐字引文命中才采纳]:::ag
+        T2[② 联网收集 · 可选<br/>Euris 联邦医疗库<br/>PubMed·Europe PMC·ClinicalTrials]:::new
+    end
+    EX --> T1
+    T1 -->|仍缺·外部背景类| T2
+    T1 --> OUT[📄 补全版文档<br/>+ 分类补料清单]:::out
+    T2 --> OUT
+    classDef src fill:#0b1020,stroke:#3a4a80,color:#9fb4ff
+    classDef ag fill:#101a33,stroke:#6c8cff,color:#cfe0ff
+    classDef new fill:#161033,stroke:#b06cff,color:#e6d4ff
+    classDef out fill:#08251c,stroke:#00e5a0,color:#9affd8
+```
+
+| 层 | 数据源 | 补什么 | 严格性保证 |
+|:--:|---|---|---|
+| ① **语料补全** | 已上传材料 | 检索漏网的**自家事实**(器械名、指标、指征…) | 每条填充必须**逐字命中源文**,否则保留 `[MISSING]` —— 只捞回,不编造 |
+| ② **联网收集** | **Euris 联邦医疗库**(PubMed · Semantic Scholar · Europe PMC · ClinicalTrials · openFDA · eCFR · EUDAMED) | **仅外部背景**:已发表文献 / 标准指南 / 流行病学·SOTA / 竞品前代 | **领域锚定检索**(疗法+适应症关键词);自家器械/临床事实**一律不联网**;每条带真实来源(DOI/PMC)+ `[AUTO-COLLECTED · 待核实]` 标注,**不混入 mkb_ 引用体系** |
+
+**默认关闭联网**,一次调用显式开启;实测同案例(DBS 治疗阿片使用障碍):把散落 54 处缺口自动归为分类补料清单,语料捞回检索漏网项,联网从 **PubMed / Europe PMC 收到真临床 SOTA**(如 *Deep Brain Stimulation for Addictive Disorders*)带 DOI 接地。
+
+**同版可靠性加固**:LLM 传输重试从 3 次/6 秒 → **指数退避 ~60 秒**,扛过供应商 ~1 分钟连接抖动(此前会把大批章节写成空桩);质量门在**大面积写手传输失败**时拦截交付,不再把掏空文档当成品发货;器械名/厂商前置页识别修复。
+
+<div align="center">
+
+`v1.35r = 缺口两层补全 · 医疗数据库联网取证 · 领域锚定 · 护栏严 · 传输韧性`
+
+</div>
+
+---
+
+## ✦ v1.34r 更新 ── 生成覆盖·压缩·稳定 `证据蒸馏 · 硬超时`
+
+> 把"每段拿几十万字全文"换成"每段拿压缩后的带引文摘要",既根治信息卡没、又让写作更稳更快。
+
+| 能力 | 做了什么 | 效果 |
+|:--:|---|---|
+| 🧪 **抽取式证据蒸馏** | 每个源→(事实 + **逐字引文** + 领域)单元,逐字引文必须命中源文才保留 | 写手输入**瘦身约 10×**,接地 100%,快模型并行 |
+| 📤 **去掉 8 源上限** | 每段拿到**全部相关源**(含 SOTA 文献),不再静默丢弃 | **根治"信息卡没"**,引用数显著提升 |
+| ⏱ **Wall-clock 硬超时** | 推理模型 trickle 字节不再让 read-timeout 失效、挂死整篇 | 单段卡住→重试→标记,不拖垮全文 |
+| 👁 **视觉 OCR + 打标签提速** | 扫描件 kimi 视觉直读(网关文档/图像块)、整文件打标签、双趟解析结果缓存去重 | 扫描件可读、读取阶段大幅提速 |
+| 🛡 **结构段·器械名·DOC- 修复** | GSPR 结构段不再落空、器械名从结构化单元恢复、文档级 DOC- 引用可解析 | 前置件与追溯表齐整 |
+
+<div align="center">
+
+`v1.34r = 证据蒸馏压缩 · 去源上限根治卡没 · 硬超时稳定 · 视觉 OCR`
 
 </div>
 
@@ -68,46 +129,26 @@ flowchart LR
 
 ---
 
-## ✦ v1.32 更新 ── 自主生成引擎再进化 `AGENT-NATIVE 2.0`
-
-> 这一版把生成引擎打磨成一位**会自己筛材料、自己查文献、自己排版、自己审校**的法规撰稿人。
-> 五项能力(E2–E5)一次落地,从"骨架草稿"跃升到"完整、可追溯、更快"的合规初稿。
-
-| 能力 | 做了什么 | 效果 |
-|:--:|---|---|
-| 🗂 **语料预筛** | 生成前按临床评价相关度给材料打分排序,只喂高信号核心文档 | 实测 124 份 → 25 份,**汰噪提质 + 提速** |
-| 📚 **文献合成** | 探测语料里的 meta 分析/临床研究,抽出量化基准表(响应率/效应量/CI),硬接地引用 | SOTA 章有**真实文献基准**,不再空泛 |
-| 📑 **前置件 + 书目** | 确定性生成文档控制表、目录、缩略语表、**编号书目 + "Cited in §N" 追溯** | 结构完整度**追平顾问级成品** |
-| ⚡ **事实前置提速** | 事实一次冻结进 fact-sheet,每章优先复用、少重复检索 | 每章少几轮往返,**修订轮数 1.1 → 0.82** |
-| 🛡 **规划纪律** | planning-only 防线只扫写手正文,前置件不误伤;禁语正则精准化 | CEP 不越界写 CER 结论,**gate 干净通过** |
-
-<div align="center">
-
-`v1.32 = 更完整的结构 · 更干净的语料 · 更真的文献 · 更快的生成 · 更严的接地`
-
-</div>
-
----
-
 ## ✦ 自主生成引擎 ── 它怎么写出一份 CEP
 
 ```mermaid
 flowchart LR
     UP[(上传材料<br/>N 份原始文件)]:::src --> CU
-    subgraph ENGINE [AGENT-NATIVE 生成引擎 v1.32]
+    subgraph ENGINE [AGENT-NATIVE 生成引擎]
         direction LR
         CU[🗂 语料预筛<br/>相关度排序<br/>汰噪留核心]:::new
+        DS[🧪 证据蒸馏<br/>事实+逐字引文单元]:::new
         PL[🧭 规划器 Agent<br/>按材料定大纲<br/>依赖图 · 深度配额]:::ag
         FS[❄ 事实冻结<br/>fact-sheet]:::ag
-        LT[📚 文献摘要<br/>SOTA 量化基准]:::new
         W[✍ 写作子代理 xN<br/>拓扑分波并行<br/>工具检索材料]:::ag
         R[⟲ 审查循环<br/>reviewer + 防线]:::ag
         CR[⚖ 文档评审官<br/>跨章一致性]:::ag
         AS[📑 装配<br/>前置件 + 编号书目]:::new
         G[🛡 确定性质量门<br/>引用接地 · 零引用即拦截]:::gate
-        CU --> PL --> FS --> LT --> W --> R --> CR --> AS --> G
+        CU --> DS --> PL --> FS --> W --> R --> CR --> AS --> G
     end
     G -->|passed| DOC[📄 CEP / CER / CIP / IB / PMCF<br/>引用锚定 Markdown + DOCX]:::out
+    DOC -.可选.-> IC[🧩 信息补全代理<br/>语料 + 医疗库联网]:::new
     G -->|ungrounded| BLK[⛔ 诚实拦截 + 补料建议]:::blk
 
     classDef src fill:#0b1020,stroke:#3a4a80,color:#9fb4ff
@@ -123,11 +164,11 @@ flowchart LR
 | 不变量 | 机制 |
 |---|---|
 | **硬引用接地** | 每句主张锚定真实材料 chunk id;运行时 seen-set 只允许引用真实检索到的证据 —— **引用不可伪造** |
-| **零幻觉** | 材料没有的事实一律写成 `[MISSING: …]`,绝不编造研究/数字 |
-| **诚实门禁** | 引用为零的"空壳文档"被 `ungrounded_document` 直接拦截 —— 宁可不出,不出无据 |
+| **零幻觉** | 材料没有的事实一律写成 `[MISSING: …]`,绝不编造研究/数字;补全代理只**逐字接地**捞回或联网带真实来源 |
+| **诚实门禁** | 引用为零的"空壳文档"被 `ungrounded_document` 直接拦截;大面积写手传输失败也拦截 —— 宁可不出,不出无据 |
 | **跨章一致** | 文档评审官单遍通读全文,统一术语、消除矛盾,再装配 |
-| **断点续跑** | 大纲 / 事实表 / 文献摘要 / 每章结果落盘,重跑只补失败章节 |
-| **双引擎** | `agent_native`(智能,默认)+ `section_first`(快速兜底);旧 Hermes 路径已退役,净删 2,350 行 |
+| **断点续跑** | 大纲 / 事实表 / 证据蒸馏 / 每章结果落盘,重跑只补失败章节 |
+| **双引擎** | `agent_native`(智能,默认)+ `section_first`(快速兜底) |
 
 ---
 
@@ -180,7 +221,8 @@ flowchart LR
         E --> F[竞品发现与裁决<br/>实质性差异]
         F --> G[锚定审计<br/>一致性审查]
     end
-    A --> GEN[[⬡ AGENT-NATIVE<br/>自主生成引擎 v1.32]]
+    A --> GEN[[⬡ AGENT-NATIVE<br/>自主生成引擎]]
+    GEN -.-> IC[🧩 信息补全代理<br/>语料 + Euris 医疗库]
     P --> KB[(本地证据库<br/>RAG + 知识图谱)]
     KB --> GEN
     A --> M[模型路由<br/>DeepSeek / Euris 网关]
@@ -202,19 +244,19 @@ flowchart LR
 ## ✦ 状态
 
 - 定位:**专家辅助草稿引擎** —— 产出需由法规事务(RA)专业人员复核,不构成申报建议
-- 生成引擎:六模板全接入(CEP · CER · CIP · IB · PMCF Plan · PMCF Synopsis),`agent_native` 为默认智能引擎
-- 评估引擎:agent-native 联网循证(`EVAL_ENGINE=agent_native` 默认),证据调查/维度评审/竞品调查三类代理 + 确定性门禁
+- 生成引擎:六模板全接入(CEP · CER · CIP · IB · PMCF Plan · PMCF Synopsis),`agent_native` 为默认智能引擎;**生成后信息补全代理**(语料 + Euris 医疗库联网)可选
+- 评估引擎:agent-native 联网循证(证据调查/维度评审/竞品调查三类代理 + 确定性门禁)
 - 界面:3D 玻璃金字塔工作台(默认落地,内嵌对话编排)+ 经典专业界面双模式
 - 核心代码为私有仓库;本仓库仅作项目展示,合作或试用请通过 Issue 联系
 
 ## ✦ 技术栈
 
-`FastAPI` · `React 19 + Vite` · `SSE 流式 + OpenAI 工具调用协议` · 多智能体编排(语料预筛 / 规划 / 事实冻结 / 文献合成 / 写作 / 审查 / 评审官)· 本地混合 RAG(词法 + 语义)· 知识图谱 · `DeepSeek / Euris` 模型网关(GPT / Qwen / Kimi / GLM)· Playwright 全流程旅程回归
+`FastAPI` · `React 19 + Vite` · `SSE 流式 + OpenAI 工具调用协议` · 多智能体编排(语料预筛 / 证据蒸馏 / 规划 / 事实冻结 / 写作 / 审查 / 评审官 / 信息补全)· 本地混合 RAG(词法 + 语义)· 知识图谱 · `Euris 联邦医疗库`(PubMed / Europe PMC / ClinicalTrials / openFDA)· `DeepSeek / Euris` 模型网关(GPT / Qwen / Kimi / GLM)· CUDA 常驻 OCR + 扫描件视觉直读 · Playwright 全流程旅程回归
 
 <div align="center">
 <br/>
 
-**⬡ MEDEVAL v1.33 ⬡**
+**⬡ MEDEVAL v1.35r ⬡**
 
 `⟢ built for regulatory-grade evidence, not vibes ⟣`
 
