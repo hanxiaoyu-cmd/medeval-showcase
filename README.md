@@ -7,7 +7,7 @@
 
 <br/>
 
-![version](https://img.shields.io/badge/VERSION-v1.35r-6c8cff?style=for-the-badge&labelColor=0b0f1a)
+![version](https://img.shields.io/badge/VERSION-v1.36-6c8cff?style=for-the-badge&labelColor=0b0f1a)
 ![status](https://img.shields.io/badge/STATUS-OPERATIONAL-00e5a0?style=for-the-badge&labelColor=0b0f1a)
 ![engine](https://img.shields.io/badge/ENGINE-AGENT__NATIVE-b06cff?style=for-the-badge&labelColor=0b0f1a)
 ![grounding](https://img.shields.io/badge/CITATIONS-CHUNK__LEVEL-00e5a0?style=for-the-badge&labelColor=0b0f1a)
@@ -28,6 +28,31 @@
 **⚠ 本仓库为项目展示页,不含源码。**
 
 ![对话工作台](assets/aurora-home.png)
+
+</div>
+
+---
+
+## ✦ v1.36 更新 ── 架构整固与自足化 `巨类拆分 · 依赖归零 · 零行为变更`
+
+> 不加功能的工程版:在完整回归测试网(离线 · 屏蔽真实 LLM 调用 · 带超时)保护下,
+> 按**真实职责边界**拆分最大的几个"上帝文件",移除外部依赖让系统完全自足 —— 全程**零行为变更**。
+
+| 模块 | 拆分前 | 拆分后 | 依据 |
+|:--|--:|--:|:--|
+| 证据库 `evidence_repository` | 4218 | **888** | 检索 / 写入 / 纯工具三向分离(mixin + utils) |
+| 评估路由 `routers/evaluation` | 3307 | **655** | HTTP 端点 ↔ 检索·评估流水线剥离 |
+| 评估器 `evaluator` | 3550 | **1836** | 无状态 helper 独立成模块 |
+| 数据清洗 `data_agent` | 3094 | **2529** | 34 个无状态方法抽离 |
+
+- **🧩 真边界拆分,不为凑行数** — 沿"变化原因不同"的职责切开;对确属内聚复杂度 + 全局可变状态的核心流水线,**诚实地不做机械硬拆**(避免把耦合藏进脆弱的反向指针)。
+- **📦 外部依赖归零** — 联网检索 CLI 从外部安装目录打包进项目 `vendor/`,系统完全自足;顺带修复一处潜伏的循环导入。
+- **🔒 攻击面收敛** — 移除可选 API-Token 鉴权链(本地优先工具无需),`ruff` 清理 100+ 未用导入。
+- **✅ 测试网护航** — CI 安全的离线回归套件逐步验证,每步全绿;外部导入面通过 re-export 完全不变。
+
+<div align="center">
+
+`v1.36 = 巨类按真实边界拆分 · 外部依赖归零 · 自足化 · 零行为变更`
 
 </div>
 
@@ -256,7 +281,7 @@ flowchart LR
 <div align="center">
 <br/>
 
-**⬡ MEDEVAL v1.35r ⬡**
+**⬡ MEDEVAL v1.36 ⬡**
 
 `⟢ built for regulatory-grade evidence, not vibes ⟣`
 
