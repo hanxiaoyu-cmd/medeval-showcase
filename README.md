@@ -3,7 +3,7 @@
 # ⬡ MEDEVAL ⬡
 
 ### ⟢ AUTONOMOUS REGULATORY INTELLIGENCE ⟣
-#### 医疗器械申报评估 · 自主循证文档生成工作台
+#### 医疗器械申报评估 · 自主循证文档生成工作台 · demo：xiaoyuu.me
 
 <br/>
 
